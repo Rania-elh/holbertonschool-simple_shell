@@ -1,62 +1,52 @@
-#include "main.h"  /* Inclut le fichier principal contenant des fonctions et des déclarations nécessaires */
+#include "main.h"
 
 /**
- * _getpath - Fonction qui trouve le chemin pour exécuter une commande
+ * _getpath- function that finds the path to execute command
  *
- * @command: La commande entrée par l'utilisateur
+ * @command: command enter by user in input
  *
- * Return: Le chemin de la commande si trouvé, ou NULL si aucun chemin n'est trouvé
+ * Return: command if command has '/', result of concat with PATH
+ * or NULL if nothing is found
  */
+
 char *_getpath(char *command)
 {
-	int i = 0;  /* Déclare une variable pour parcourir les éléments de l'environnement */
-	char *token = NULL;  /* Déclare un pointeur pour stocker les différentes parties de l'environnement */
-	char *cache;  /* Pointeur pour stocker une copie de chaque variable d'environnement */
-	char *result = NULL;  /* Pointeur pour stocker le chemin final de la commande */
+	int i = 0;
+	char *token = NULL;
+	char *cache;
+	char *result = NULL;
 
-	/* Si la commande contient déjà un '/', il s'agit d'un chemin absolu, donc retourne la commande telle quelle */
 	if (strchr(command, '/') != NULL)
-		return (strdup(command));  /* Retourne une copie de la commande si un chemin est fourni */
-
-	/* Parcours chaque variable d'environnement */
-	while (environ[i])  /* Tant qu'il y a des éléments dans l'environnement */
+		return (strdup(command));
+	while (environ[i])
 	{
-		cache = strdup(environ[i]);  /* Crée une copie de la variable d'environnement actuelle */
-		token = strtok(cache, "=");  /* Sépare la variable d'environnement au signe égal pour obtenir "PATH" */
-
-		/* Si la variable d'environnement est "PATH", on la traite pour trouver le chemin */
+		cache = strdup(environ[i]);
+		token = strtok(cache, "=");
 		if (strcmp(token, "PATH") == 0)
 		{
-			token = strtok(NULL, "=");  /* Obtient la valeur de la variable PATH après le signe égal */
-			token = strtok(token, ":");  /* Sépare les différentes parties du chemin (les répertoires séparés par ':') */
-
-			/* Parcours chaque répertoire dans le PATH */
+			token = strtok(NULL, "=");
+			token = strtok(token, ":");
 			while (token)
 			{
-				/* Alloue de la mémoire pour le chemin complet (répertoire + commande) */
-				result = malloc(strlen(token) + strlen(command) + 2);  /* +2 pour le '/' et le caractère nul à la fin */
-				if (result == NULL)  /* Si l'allocation échoue */
+				result = malloc(strlen(token) + strlen(command) + 2);
+				if (result ==  NULL)
 				{
-					perror("Malloc is NULL");  /* Affiche un message d'erreur */
-					return (NULL);  /* Retourne NULL si l'allocation échoue */
+					perror("Malloc is NULL");
+					return (NULL);
 				}
-
-				/* Concatène le répertoire et la commande pour créer un chemin complet */
 				sprintf(result, "%s/%s", token, command);
-
-				/* Vérifie si le fichier existe et est exécutable */
 				if (access(result, X_OK) == 0)
 				{
-					free(cache);  /* Libère la mémoire allouée pour la variable d'environnement */
-					return (result);  /* Retourne le chemin trouvé si le fichier est exécutable */
+					free(cache);
+					return (result);
 				}
-				free(result);  /* Libère la mémoire allouée pour le chemin si le fichier n'est pas exécutable */
-				token = strtok(NULL, ":");  /* Passe au répertoire suivant dans le PATH */
+				free(result);
+				token = strtok(NULL, ":");
 			}
 		}
-		free(cache);  /* Libère la mémoire allouée pour la variable d'environnement */
-		i++;  /* Passe à la variable d'environnement suivante */
+		free(cache);
+		i++;
 	}
-	free(command);  /* Libère la mémoire allouée pour la commande entrée par l'utilisateur */
-	return (NULL);  /* Retourne NULL si aucun chemin n'a été trouvé pour la commande */
+	free(command);
+	return (NULL);
 }
