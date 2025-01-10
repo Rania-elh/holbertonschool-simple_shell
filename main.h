@@ -12,7 +12,6 @@ extern char **environ;  /* Déclare la variable d'environnement (tableau de cha�
 
 void token_input(char *input);  /* Déclare la fonction qui traitera l'entrée de l'utilisateur en la divisant en tokens */
 void executable(char **argv, char *input);  /* Déclare la fonction pour exécuter un fichier, si les permissions sont correctes */
-char *_getpath(char *cmd);  /* Déclare la fonction qui cherche le chemin d'un fichier exécutable à partir de la commande */
 void print_env(void);  /* Déclare la fonction pour afficher les variables d'environnement */
 
 #endif  /* Fin de la vérification de l'inclusion multiple */
